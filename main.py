@@ -114,7 +114,8 @@ def calc_g(node):
 def goal_test(node):
     if ((global_heuristic in list_heuristic) and node.h_val == 0):
         return True
-    ###elif global_heuristic == "uniform cost" and 
+    elif global_heuristic == "uniform cost" and equal_trivial(node.mtx):
+        return True
     else:
         return False
 
