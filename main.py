@@ -51,15 +51,15 @@ center = [[1, 2, 3],
 goal_dict = {1:[0,0], 2:[0,1], 3:[0,2], 4:[1,0], 5:[1,1], 6:[1,2],
             7:[2,0], 8:[2,1]}
 
-#a set of tuples of moves the 0 can do in a matrix
+#a list of tuples of moves the 0 can do in a matrix
 #U: 11-> 01
 #D: 01-> 11
 #L: 11-> 10
 #R: 11-> 12
-add_move = {('U', (-1,0)), 
+add_move = [('U', (-1,0)), 
             ('D', (1,0)),
             ('L', (0,-1)),
-            ('R', (0, 1))}
+            ('R', (0, 1))]
 
 global_heuristic = ""
 #fixme: for now, have it set as manhattan
@@ -93,8 +93,18 @@ class puzl_node:
         #self.nextNode_down = None #" " where 0 moves down
 
 def print_mtx(mtx):
-    for i, y in enumerate(mtx):
+    for i in range(len(mtx)):
         print(mtx[i])
+    return
+
+#to call: arg = node
+#purpose: prints node's mtx with g, h, values
+def print_nodes_mtx(node):
+    for i in range(len(node.mtx)):
+        print(node.mtx[i])
+    print("g: ", node.g_val)
+    print("h: ", node.h_val)
+    print("f: ", node.f_val)
     return
 
 #returns a tuple of the position where 0 is
@@ -104,13 +114,36 @@ def locate_zero_pos(mtx):
             if mtx[y][x] == 0:
                 return (y,x)
 
-def possible_mtx_nodes(mtx, move):
+#to call this, 1st arg: node
+def possible_mtx_nodes(node):
     #fixme: change if to for
-    #tuple unpacking
-    for move, position in add_move:
-        new_mtx = copy.deepcopy(mtx)
-        
-        new_mtx_node = puzl_node()
+    
+    print("within poss_mtx_node; printing orig mtx:")
+    print_mtx(node.mtx)
+    #tuple unpacking of the ordered list: add_move
+    print("           >>>>>>>>>>>")
+    for move, add_position in add_move:
+        new_mtx = copy.deepcopy(node.mtx)
+        print(node.zero_pos)
+        #unpacking the addition of the tuples
+        new_y_zero_pos = (node.zero_pos)[0] + add_position[0]
+        new_x_zero_pos = (node.zero_pos)[1] + add_position[1]
+        tmp_val = new_mtx[new_y_zero_pos][new_x_zero_pos] 
+        new_mtx[new_y_zero_pos][new_x_zero_pos] = 0 #moving zero to new pos
+        #moving tmp_val to old zero pos
+        new_mtx[(node.zero_pos)[0]][(node.zero_pos)[1]] = tmp_val
+
+#todo: set the nodes for the other two
+#the only thing that would change would be the if() and the calc_
+        if (global_heuristic == "manhattan"):
+            new_mtx_node = puzl_node(new_mtx, 
+                                        (node.g_val)+1,
+                                        calc_h_manhattan_dist(new_mtx),
+                                        (new_y_zero_pos, new_x_zero_pos))
+
+        print("printing node's new mtx:   ")
+        print_nodes_mtx(new_mtx_node)
+        print("                  <<<<<<<<<<<<<<<<<<<<")
     return
 
 #h(n) = heuristic that /underestimates/
@@ -204,13 +237,16 @@ def main():
  #   h_md_oneAway = calc_h_manhattan_dist(one_away)
   #  print("solution = 1: ", h_md_oneAway)
 
-    #1st arg: mtx, 2nd arg: g, 3rd arg: h
-    mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
+    #1st arg: mtx, 2nd arg: g, 3rd arg: h, 4th:zero_pos
+    mtx_node = puzl_node(center, 0, calc_h_manhattan_dist(center))
     #print("goal test should be false at this point: ", goal_test(mtx_node)) 
     #print("testing matrix==trivial:", equal_trivial(trivial))
-    print(print_mtx(one_away))
+    #print(print_mtx(center))
     #print(locate_zero_pos(center))
-    print(mtx_node.zero_pos)
+    #print(mtx_node.zero_pos)
+    print(" >>>>>>>    <<<<<<<")
+    possible_mtx_nodes(mtx_node)
+
 
     ###a_star(mtx_node)
     ###if goal_test()
