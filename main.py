@@ -72,15 +72,47 @@ def set_heuristic(userInput):
     global_heuristic = userInput
     return
 
+#ref: consulted https://www.tutorialspoint.com/python/python_nodes.htm
+#       on how to build node class
+#creating nodes class that rep puzl matrices and val = g + h
+#how2use: insert g+h as arg to get total val
+#purpose: creates a trace from root to goal node + respective cost vals
+class puzl_node:
+    def __init__(self, mtx, g_val=0, h_val=0, zero_pos=(2,2)):
+        self.mtx = copy.deepcopy(mtx) #deep copies the mtx(list)
+        self.g_val = g_val
+        self.h_val = h_val
+        self.f_val = self.g_val + self.h_val
+        self.zero_pos = locate_zero_pos(self.mtx)
+        #fixme: need parent? maybenot?
+        self.parent = None
+        self.nextNode = None
+        
+        #fixme: rm: points to list(matrix) where 0 moves up
+
+        #self.nextNode_down = None #" " where 0 moves down
+
 def print_mtx(mtx):
     for i, y in enumerate(mtx):
         print(mtx[i])
-
-def mtx_manip(mtx, move):
-    #fixme: change if to for
-    #if move in add_move:
-    #    mtx
     return
+
+#returns a tuple of the position where 0 is
+def locate_zero_pos(mtx):
+    for y in range(len(mtx)):
+        for x in range(len(mtx[0])):
+            if mtx[y][x] == 0:
+                return (y,x)
+
+def possible_mtx_nodes(mtx, move):
+    #fixme: change if to for
+    #tuple unpacking
+    for move, position in add_move:
+        new_mtx = copy.deepcopy(mtx)
+        
+        new_mtx_node = puzl_node()
+    return
+
 #h(n) = heuristic that /underestimates/
 #   the sum of /each/ tile's_distance_to_desired_pos
 #purpose: add this with g(n)=cost_of_path2currNode
@@ -95,24 +127,6 @@ def calc_h_manhattan_dist(puzl_list):
                 sum += abs(yIndx_of_goal - y) + abs(xIndx_of_goal - x)
     return sum
 
-#ref: consulted https://www.tutorialspoint.com/python/python_nodes.htm
-#       on how to build node class
-#creating nodes class that rep puzl matrices and val = g + h
-#how2use: insert g+h as arg to get total val
-#purpose: creates a trace from root to goal node + respective cost vals
-class puzl_node:
-    def __init__(self, mtx, g_val=0, h_val=0):
-        self.mtx = copy.deepcopy(mtx) #deep copies the mtx(list)
-        self.g_val = g_val
-        self.h_val = h_val
-        self.f_val = self.g_val + self.h_val
-        #fixme: need parent? maybenot?
-        self.parent = None
-        self.nextNode = None
-        
-        #fixme: rm: points to list(matrix) where 0 moves up
-
-        #self.nextNode_down = None #" " where 0 moves down
 
 #TODO: implement formula for g
 #fixme? is this what I want? function: the curr cost of curr node path
@@ -192,9 +206,11 @@ def main():
 
     #1st arg: mtx, 2nd arg: g, 3rd arg: h
     mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
-    print("goal test should be false at this point: ", goal_test(mtx_node)) 
+    #print("goal test should be false at this point: ", goal_test(mtx_node)) 
     #print("testing matrix==trivial:", equal_trivial(trivial))
-    print(print_mtx(center))
+    print(print_mtx(one_away))
+    #print(locate_zero_pos(center))
+    print(mtx_node.zero_pos)
 
     ###a_star(mtx_node)
     ###if goal_test()
