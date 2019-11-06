@@ -48,6 +48,17 @@ sample_sol = [[1, 2, 3],
 goal_dict = {1:[0,0], 2:[0,1], 3:[0,2], 4:[1,0], 5:[1,1], 6:[1,2],
             7:[2,0], 8:[2,1]}
 
+global_heuristic = ""
+#fixme: for now, have it set as manhattan
+global_heuristic = "manhattan"
+#technically, uniform cost isn't a heuristic
+#this list is used for def goal_test
+list_heuristic = ["manhattan", "hamming"]
+
+def set_heuristic(userInput):
+    global_heuristic = userInput
+    return
+
 #h(n) = heuristic that /underestimates/
 #   the sum of /each/ tile's_distance_to_desired_pos
 #purpose: add this with g(n)=cost_of_path2currNode
@@ -93,17 +104,28 @@ class puzl_node:
 def calc_g(node):
     node.g_val += 1 #incr g_val by one after a move is made
     return
-
+ 
 #checks whether curr node is the goal state
-#if heuristic == manhattan, goal == if h(n) == 0
-#if heuristic == hamming, goal == if h(n) == 0
-#if using uniform cost fcn: must check if each tile is in correct place
+#1.if heuristic == manhattan, goal == if h(n) == 0
+# if heuristic == hamming, goal == if h(n) == 0
+#2.if using uniform cost fcn: must check if each tile is in correct place
 #arg: node.val which contains the matrix(list)
+#todo: impl 2 and 3
 def goal_test(node):
-    if (heuristic == "manhattan" and node.h_val == 0):
+    if ((global_heuristic in list_heuristic) and node.h_val == 0):
         return True
+    ###elif global_heuristic == "uniform cost" and 
     else:
         return False
+
+#compares arg_mtx with trivial: tile by tile
+def equal_trivial(mtx):
+    for y in range(len(trivial)):
+        for x in range(len(trivial[0])):
+            if mtx[y][x] != trivial[y][x]:
+                return False
+    return True
+
 
 #arg: init_node = a node from main()
 def a_star(init_node):
@@ -128,7 +150,7 @@ def a_star(init_node):
     return
 
 #global variables:
-heuristic = "manhattan"
+global_heuristic = "manhattan"
 
 def main():
 #tests:
@@ -148,6 +170,7 @@ def main():
     #1st arg: mtx, 2nd arg: g, 3rd arg: h
     mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
     print("goal test should be false at this point: ", goal_test(mtx_node)) 
+    #print("testing matrix==trivial:", equal_trivial(trivial))
 
     ###a_star(mtx_node)
     ###if goal_test()
