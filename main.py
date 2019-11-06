@@ -123,11 +123,16 @@ def possible_mtx_nodes(node):
     #tuple unpacking of the ordered list: add_move
     print("           >>>>>>>>>>>")
     for move, add_position in add_move:
-        new_mtx = copy.deepcopy(node.mtx)
-        print(node.zero_pos)
         #unpacking the addition of the tuples
         new_y_zero_pos = (node.zero_pos)[0] + add_position[0]
         new_x_zero_pos = (node.zero_pos)[1] + add_position[1]
+        
+        #skips for loop if out of bounds
+        if (new_y_zero_pos > 2 or new_y_zero_pos < 0 or 
+            new_x_zero_pos > 2 or new_x_zero_pos < 0):
+            continue
+
+        new_mtx = copy.deepcopy(node.mtx)
         tmp_val = new_mtx[new_y_zero_pos][new_x_zero_pos] 
         new_mtx[new_y_zero_pos][new_x_zero_pos] = 0 #moving zero to new pos
         #moving tmp_val to old zero pos
@@ -238,13 +243,12 @@ def main():
   #  print("solution = 1: ", h_md_oneAway)
 
     #1st arg: mtx, 2nd arg: g, 3rd arg: h, 4th:zero_pos
-    mtx_node = puzl_node(center, 0, calc_h_manhattan_dist(center))
+    mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
     #print("goal test should be false at this point: ", goal_test(mtx_node)) 
     #print("testing matrix==trivial:", equal_trivial(trivial))
     #print(print_mtx(center))
     #print(locate_zero_pos(center))
     #print(mtx_node.zero_pos)
-    print(" >>>>>>>    <<<<<<<")
     possible_mtx_nodes(mtx_node)
 
 
