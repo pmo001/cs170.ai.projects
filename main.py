@@ -1,4 +1,4 @@
-import heapq as minheap_q #ref: inspired from Lorem Ipsum project sample
+import heapq #ref: inspired from Lorem Ipsum project sample
 
 #general srch alg: (from project briefing)
 #arg1: problem(init state)
@@ -43,18 +43,13 @@ sample_sol = [[1, 2, 3],
 # h(n) = total = 3 
 
 #value: the key's index position w.r.t matrices   
-goal_dict = {1:[0,0],
-            2:[0,1],
-            3:[0,2],
-            4:[1,0],
-            5:[1,1],
-            6:[1,2],
-            7:[2,0],
-            8:[2,1]}
+goal_dict = {1:[0,0], 2:[0,1], 3:[0,2], 4:[1,0], 5:[1,1], 6:[1,2],
+            7:[2,0], 8:[2,1]}
 
 #h(n) = heuristic that /underestimates/
 #   the sum of /each/ tile's_distance_to_desired_pos
-
+#purpose: add this with g(n)=cost_of_path2currNode
+#   g+h = f, use f to determine which node to expand
 def calc_h_manhattan_dist(puzl_list):
     sum = 0
     for y in range(len(puzl_list)): #rowNum 0,1,2
@@ -65,21 +60,32 @@ def calc_h_manhattan_dist(puzl_list):
                 sum += abs(yIndx_of_goal - y) + abs(xIndx_of_goal - x)
     return sum
 
+#ref: consulted https://www.tutorialspoint.com/python/python_nodes.htm
+#       on how to build node class
+#creating nodes class that rep puzl matrices and val = g + h
+class puzl_node:
+    def __init__(self, dataval=None):
+        self.dataval = dataval #the arg is the list(matrix)
+        self.nextval = None #points to nothing as of now
+
+def minheap_impl():
+    minheap = [] #init minheap
+
 
 def main():
-    h_md_sample_sol = calc_h_manhattan_dist(sample_sol)
-    print("solution = 3: ", h_md_sample_sol)
-
-    h_md_trivial = calc_h_manhattan_dist(trivial)
-    print("solution = 0: ", h_md_trivial)
-
-    h_md_oneAway = calc_h_manhattan_dist(one_away)
-    print("solution = 1: ", h_md_oneAway)
-
-    h_md_mustTrace = calc_h_manhattan_dist(must_trace)
-    print("solution = 2: ", h_md_mustTrace)
+    #h_md_sample_sol = calc_h_manhattan_dist(sample_sol)
+    #print("solution = 3: ", h_md_sample_sol)
+    #h_md_trivial = calc_h_manhattan_dist(trivial)
+#    print("solution = 0: ", h_md_trivial)
+ #   h_md_oneAway = calc_h_manhattan_dist(one_away)
+  #  print("solution = 1: ", h_md_oneAway)
+   # h_md_mustTrace = calc_h_manhattan_dist(must_trace)
+    #print("solution = 2: ", h_md_mustTrace)
 
     return
 
+#python3: don't need if__name
 main()
-#create all possible matrices(except repeated states)
+
+#stick init state list into minheap
+#expand depending on g+h
