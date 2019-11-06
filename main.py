@@ -43,10 +43,23 @@ sample_sol = [[1, 2, 3],
 #           5: 1
 #           8: 1
 # h(n) = total = 3 
+center = [[1, 2, 3],
+        [4, 0, 6],
+        [7, 5, 8]]
 
 #value: the key's index position w.r.t matrices   
 goal_dict = {1:[0,0], 2:[0,1], 3:[0,2], 4:[1,0], 5:[1,1], 6:[1,2],
             7:[2,0], 8:[2,1]}
+
+#a set of tuples of moves the 0 can do in a matrix
+#U: 11-> 01
+#D: 01-> 11
+#L: 11-> 10
+#R: 11-> 12
+add_move = {('U', (-1,0)), 
+            ('D', (1,0)),
+            ('L', (0,-1)),
+            ('R', (0, 1))}
 
 global_heuristic = ""
 #fixme: for now, have it set as manhattan
@@ -59,6 +72,15 @@ def set_heuristic(userInput):
     global_heuristic = userInput
     return
 
+def print_mtx(mtx):
+    for i, y in enumerate(mtx):
+        print(mtx[i])
+
+def mtx_manip(mtx, move):
+    #fixme: change if to for
+    #if move in add_move:
+    #    mtx
+    return
 #h(n) = heuristic that /underestimates/
 #   the sum of /each/ tile's_distance_to_desired_pos
 #purpose: add this with g(n)=cost_of_path2currNode
@@ -172,6 +194,7 @@ def main():
     mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
     print("goal test should be false at this point: ", goal_test(mtx_node)) 
     #print("testing matrix==trivial:", equal_trivial(trivial))
+    print(print_mtx(center))
 
     ###a_star(mtx_node)
     ###if goal_test()
