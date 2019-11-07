@@ -165,20 +165,6 @@ def calc_h_manhattan_dist(puzl_list):
                 sum += abs(yIndx_of_goal - y) + abs(xIndx_of_goal - x)
     return sum
 
-
-#TODO: implement formula for g
-#fixme? is this what I want? function: the curr cost of curr node path
-#
-#fixme? should up/down moves cost 2 while L/R cost 1?
-
-#first impl: each move = 1
-#arg = node
-# returns node's g_val
-#fixme: might not need this. could just incr directly in the node
-def calc_g(node):
-    node.g_val += 1 #incr g_val by one after a move is made
-    return
- 
 #checks whether curr node is the goal state
 #1.if heuristic == manhattan, goal == if h(n) == 0
 # if heuristic == hamming, goal == if h(n) == 0
@@ -208,7 +194,8 @@ def a_star(init_node):
     #2nd arg: a tuple of f(n) and the deepcopied mtx
     #minheap: the lowest f_val is the root
     heapq.heappush(minheap, (init_node.f_val, init_node)) #fixme? make get_f_val?
-
+    seen = set() #init seen as empty set
+    #TODO: impl. seen set
     #while(bool_not_goal_state)
     #   1. assign parent variable=root node
     #   2.insert nodes of next states' possible moves (up,down,L,R)
