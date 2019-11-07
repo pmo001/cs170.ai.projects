@@ -60,6 +60,7 @@ add_move = [('L', (0,-1)),
 #global variables
 global_heuristic = ""
 global_numNodes = 0
+global_max_q_len = 0
 
 #fixme: for now, have it set as manhattan
 global_heuristic = "manhattan"
@@ -74,25 +75,17 @@ def set_heuristic(userInput):
 
 #ref: consulted https://www.tutorialspoint.com/python/python_nodes.htm
 #       on how to build node class
-#creating nodes class that rep puzl matrices and val = g + h
-#how2use: insert g+h as arg to get total val
-#purpose: creates a trace from root to goal node + respective cost vals
+#creating nodes class that rep puzl matrices and f_val = g + h
+#not a linked list anymore since removed parent and next pointers
 class puzl_node:
-    def __init__(self, mtx, g_val=0, h_val=0, newMoves=''): #rm'd zero_pos
+    def __init__(self, mtx, g_val=0, h_val=0, newMoves=''):
         self.mtx = copy.deepcopy(mtx) #deep copies the mtx(list)
         self.g_val = g_val
         self.h_val = h_val
         self.f_val = self.g_val + self.h_val
         self.zero_pos = locate_zero_pos(self.mtx)
-        #fixme: need parent? maybenot?
-        self.parent = None
-        self.nextNode = None #fixme: i don't think i need to implement this, parent is enuf
         
-        self.numNodes = 0 #fixme? counts numNodes created
         self.storedMoves = newMoves
-        #fixme: rm: points to list(matrix) where 0 moves up
-
-        #self.nextNode_down = None #" " where 0 moves down
 
 def print_mtx(mtx):
     for i in range(len(mtx)):
@@ -157,6 +150,7 @@ def add_poss_mtx_nodes(minheap, node):
             #only set global when requires change (i.e increment)
             global global_numNodes
             global_numNodes += 1
+            
             #adds move to storedMoves
             #fixme?probnot: rm'd: new_mtx_node.storedMoves += move
             #>>add the new node to minheap (still within if-statement)
@@ -165,7 +159,10 @@ def add_poss_mtx_nodes(minheap, node):
             #heapq will compare the first el of the tuple: f
             #if f are same, will compare numNodes next(the order they are created)
             heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
-        
+
+            global global_max_q_len
+            if global_max_q_len < len(minheap):
+                global_max_q_len = len(minheap)
         #print_nodes_mtx(new_mtx_node)
     return
 
@@ -179,26 +176,11 @@ def heap_is_empty(minheap):
 def a_star(init_node):
     minheap = [] #init minheap
     #2nd arg: a tuple of f(n) and the deepcopied mtx
-    #minheap: the lowest f_val is the root
     f = init_node.f_val
-    #heapq will compare first el of tuple: f
-    heapq.heappush(minheap, (f, global_numNodes, init_node)) #fixme? make get_f_val?
+    #heapq will compare first el of tuple: f, then numNodes
+    heapq.heappush(minheap, (f, global_numNodes, init_node))
     seen = [] #init seen as empty list
-    #TODO: impl. seen set
 
-    #while(bool_not_goal_state)
-    #   1. assign parent variable=root node
-    #   2.insert nodes of next states' possible moves (up,down,L,R)
-    #       >first copy parent node, then make alteration
-    #       >the minheap will auto move the lowest_val_node into root
-    #   3.assign 
-    #   4.pop the root node
-    #       the non-root node with the lowest val gets moved to top of minheap
-    #       check if root==goal state
-    #       print root
-    #       keep not_goal_state true
-    #return to top of while(not_goal_state) loop and do all over again until not_goal_state==false
-    ###bool_not_goal_state = True
     while (not heap_is_empty(minheap)):
         #pops root: a tuple of 0.f_val ; 1.numNodes count 2.node
         popped_node = heapq.heappop(minheap)[2]
@@ -260,44 +242,35 @@ def equal_trivial(mtx):
 global_heuristic = "manhattan" #fixme later
 def main():
 #tests:
-    #h_md_sample_sol = calc_h_manhattan_dist(sample_sol)
-    #print("solution = 3: ", h_md_sample_sol)
-
- #   h_md_oneAway = calc_h_manhattan_dist(one_away)
-  #  print("solution = 1: ", h_md_oneAway)
-
     #1st arg: mtx, 2nd arg: g, 3rd arg: h, 4th:zero_pos
     ####mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
-    #print("goal test should be false at this point: ", goal_test(mtx_node)) 
-    #print("testing matrix==trivial:", equal_trivial(trivial))
-    #print(print_mtx(center))
+
     #set as global so that this global variable can be changed
     global global_numNodes
+    global global_max_q_len
     global_numNodes = 0
+    global_max_q_len = 0
     mtx_node = puzl_node(center, 0, calc_h_manhattan_dist(center))
-
-    
     all_moves, total_nodes = a_star(mtx_node)
-    print("moves: {}\n total # of expanded nodes: {}".format(all_moves,
-                                                                    total_nodes))
-    
+    print("moves: {}\n total # of expanded nodes: {}".format(all_moves,total_nodes))
+    print("max num nodes in heap: ", global_max_q_len)
+
     #resets numNodes count in prep for next puzzle
     #global global_numNodes
     global_numNodes = 0
+    global_max_q_len = 0
     mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
     all_moves, total_nodes = a_star(mtx_node)
     print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
+    print("max num nodes in heap: ", global_max_q_len)
 
     global_numNodes = 0
+    global_max_q_len = 0
     mtx_node = puzl_node(sample_sol, 0, calc_h_manhattan_dist(sample_sol))
     all_moves, total_nodes = a_star(mtx_node)
     print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
-
-    #if mtx_node.mtx == mtx_node2.mtx:
-     #   print("they are equal")
-  #  else:
-   #     print("not equal")
-
+    print("max num nodes in heap: ", global_max_q_len)
+    
     
 
    # h_md_mustTrace = calc_h_manhattan_dist(must_trace)
