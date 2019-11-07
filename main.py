@@ -20,29 +20,12 @@ one_away = [[1, 2, 3],
             [4, 5, 6],
             [7, 0, 8]]
 #          20  21  22
-# abs(xIndx - xIndx_of_goal) + abs(yIndx - yIndx_of_goal) 
-# above formula's reference: #ref: https://stackoverflow.com/questions/39759721/calculating-the-manhattan-distance-in-the-eight-puzzle
-# |2-2| + |2-1| = 1
+
 must_trace = [[1, 2, 3],
             [4, 0, 6],
             [7, 5, 8]]
             #sol = 2
 
-#sample project: num nodes expanded: 13
-            #   :max queue size: 8
-
-#          00  01  02
-#          10  11  12
-sample_sol = [[1, 2, 3],
-            [0, 4, 6],
-            [7, 5, 8]]
-#          20  21  22
-#5: |2-1| + |1-1| = 1
-#4: |1-1| + |1-0| = 1
-#manhattan: 4: 1 away
-#           5: 1
-#           8: 1
-# h(n) = total = 3 
 center = [[1, 2, 3],
         [4, 0, 6],
         [7, 5, 8]]
@@ -117,8 +100,9 @@ def add_poss_mtx_nodes(minheap, node):
     
     print("within poss_mtx_node; printing orig mtx:")
     print_mtx(node.mtx)
+    print("g(n) = ", node.g_val)
+    print("h(n) = ", node.h_val)
     #tuple unpacking of the ordered list: add_move
-    print("           >>>>>>>>>>>")
     for move, add_position in add_move:
         #unpacking the addition of the tuples
         new_y_zero_pos = (node.zero_pos)[0] + add_position[0]
@@ -214,8 +198,22 @@ def calc_h_manhattan_dist(puzl_list):
         for x in range(len(puzl_list[0])):
             if puzl_list[y][x] != 0: #0 has no dict
                 yIndx_of_goal, xIndx_of_goal = goal_dict.get(puzl_list[y][x])
-                #formula reference @ line21,22
+# ref: https://stackoverflow.com/questions/39759721/calculating-the-manhattan-distance-in-the-eight-puzzle
+# abs(xIndx - xIndx_of_goal) + abs(yIndx - yIndx_of_goal) 
                 sum += abs(yIndx_of_goal - y) + abs(xIndx_of_goal - x)
+    return sum
+
+def calc_hamming_dist(puzl_list):
+    sum = 0
+    list1 = []
+    for y in range(len(puzl_list)):
+        for x in range(len(puzl_list)):
+            list1.append(puzl_list[y][x])
+    print(list1)
+    list2 = [1,2,3,4,5,6,7,8,0]
+    for i in range(len(list2)):
+        if list1[i] != list2[i]:
+            sum += 1
     return sum
 
 #1.if heuristic == manhattan, goal == if h(n) == 0
@@ -248,21 +246,30 @@ def main():
     #set as global so that this global variable can be changed
     global global_numNodes
     global global_max_q_len
-    global_numNodes = 0
-    global_max_q_len = 0
-    mtx_node = puzl_node(center, 0, calc_h_manhattan_dist(center))
-    all_moves, total_nodes = a_star(mtx_node)
-    print("moves: {}\n total # of expanded nodes: {}".format(all_moves,total_nodes))
-    print("max num nodes in heap: ", global_max_q_len)
-
+#    global_numNodes = 0
+#    global_max_q_len = 0
+#    mtx_node = puzl_node(center, 0, calc_h_manhattan_dist(center))
+#    all_moves, total_nodes = a_star(mtx_node)
+#    print("moves: {}\n total # of expanded nodes: {}".format(all_moves,total_nodes))
+#    print("max num nodes in heap: ", global_max_q_len)
+    
     #resets numNodes count in prep for next puzzle
     #global global_numNodes
-    global_numNodes = 0
-    global_max_q_len = 0
-    mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
-    all_moves, total_nodes = a_star(mtx_node)
-    print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
-    print("max num nodes in heap: ", global_max_q_len)
+#    global_numNodes = 0
+#    global_max_q_len = 0
+#    mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
+#    all_moves, total_nodes = a_star(mtx_node)
+#    print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
+#    print("max num nodes in heap: ", global_max_q_len)
+#    print("             <<<<<<<<<<<<<    end")
+
+#    global_numNodes = 0
+#    global_max_q_len = 0
+#    mtx_node = puzl_node(sample_sol, 0, calc_h_manhattan_dist(sample_sol))
+#    all_moves, total_nodes = a_star(mtx_node)
+#    print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
+#    print("max num nodes in heap: ", global_max_q_len)
+#    print("             <<<<<<<<<<<<<    end")
 
     global_numNodes = 0
     global_max_q_len = 0
@@ -270,11 +277,22 @@ def main():
     all_moves, total_nodes = a_star(mtx_node)
     print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
     print("max num nodes in heap: ", global_max_q_len)
-    
+    print("             <<<<<<<<<<<<<    end")
     
 
-   # h_md_mustTrace = calc_h_manhattan_dist(must_trace)
-    #print("solution = 2: ", h_md_mustTrace)
 
     return
+
+#          00  01  02
+#          10  11  12
+#3 moves:RDR
+sample_sol = [[1, 2, 3],
+            [0, 4, 6],
+            [7, 5, 8]]
+#          20  21  22
+
+#2 moves DR
+sample_solution = [[1, 2, 3],
+                [4, 0, 6],
+                [7, 5, 8]]
 main()
