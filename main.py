@@ -45,8 +45,6 @@ global_heuristic = ""
 global_numNodes = 0
 global_max_q_len = 0
 
-#fixme: for now, have it set as manhattan
-global_heuristic = "manhattan"
 #technically, uniform cost isn't a heuristic
 #this list is used for def goal_test
 list_heuristic = ["manhattan", "hamming"]
@@ -98,8 +96,10 @@ def locate_zero_pos(mtx):
 def add_poss_mtx_nodes(minheap, node):
     #fixme: change if to for
     
-    print("within poss_mtx_node; printing orig mtx:")
-    print_mtx(node.mtx)
+    #print("within poss_mtx_node; printing orig mtx:")
+    print("Expanding this state:")
+    #uncomment below to show trace of solution
+    ###print_mtx(node.mtx)
     print("g(n) = ", node.g_val)
     print("h(n) = ", node.h_val)
     #tuple unpacking of the ordered list: add_move
@@ -121,33 +121,66 @@ def add_poss_mtx_nodes(minheap, node):
 
 #todo: set the nodes for the other two
 #the only thing that would change would be the if() and the calc_
+        global global_numNodes
+        global global_max_q_len
         if (global_heuristic == "manhattan"):
             new_mtx_node = puzl_node(new_mtx, 
                                         (node.g_val)+1,
                                         calc_h_manhattan_dist(new_mtx),
                                         (node.storedMoves + move))
-                        #fixme? rm'd this     (new_y_zero_pos, new_x_zero_pos))
-            #assign parent pointer to prev
-            new_mtx_node.parent = node #fixme? might not need this with storedMoves
-            ##fixme: rm'd: new_mtx_node.numNodes += 1
-
             #only set global when requires change (i.e increment)
-            global global_numNodes
+            ###global global_numNodes
             global_numNodes += 1
             
-            #adds move to storedMoves
-            #fixme?probnot: rm'd: new_mtx_node.storedMoves += move
-            #>>add the new node to minheap (still within if-statement)
             #add to minheap by priority(f-val)
             f = new_mtx_node.f_val
             #heapq will compare the first el of the tuple: f
             #if f are same, will compare numNodes next(the order they are created)
             heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
-
-            global global_max_q_len
+            #counter for max # nodes in queue at a time
+            ###global global_max_q_len
             if global_max_q_len < len(minheap):
                 global_max_q_len = len(minheap)
-        #print_nodes_mtx(new_mtx_node)
+
+        elif (global_heuristic == "hamming"):
+            new_mtx_node = puzl_node(new_mtx, 
+                                        (node.g_val)+1,
+                                        calc_hamming_dist(new_mtx),
+                                        (node.storedMoves + move))
+            #only set global when requires change (i.e increment)
+            ###global global_numNodes
+            global_numNodes += 1
+            
+            #add to minheap by priority(f-val)
+            f = new_mtx_node.f_val
+            #heapq will compare the first el of the tuple: f
+            #if f are same, will compare numNodes next(the order they are created)
+            heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
+            #counter for max # nodes in queue at a time
+            ###global global_max_q_len
+            if global_max_q_len < len(minheap):
+                global_max_q_len = len(minheap)
+
+        elif (global_heuristic == "uniform cost"):
+            #3rd arg: h(n) = 0
+            new_mtx_node = puzl_node(new_mtx, 
+                                        (node.g_val)+1,
+                                        0,
+                                        (node.storedMoves + move))
+            #only set global when requires change (i.e increment)
+            ###global global_numNodes
+            global_numNodes += 1
+            
+            #add to minheap by priority(f-val)
+            f = new_mtx_node.f_val
+            #heapq will compare the first el of the tuple: f
+            #if f are same, will compare numNodes next(the order they are created)
+            heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
+            #counter for max # nodes in queue at a time
+            ###global global_max_q_len
+            if global_max_q_len < len(minheap):
+                global_max_q_len = len(minheap)
+            
     return
 
 #checks if minheap is empty
@@ -237,7 +270,6 @@ def equal_trivial(mtx):
 
 
 #TODO: set global_heuristic = "manhattan" or whatever user wants
-global_heuristic = "manhattan" #fixme later
 def main():
 #tests:
     #1st arg: mtx, 2nd arg: g, 3rd arg: h, 4th:zero_pos
@@ -246,43 +278,57 @@ def main():
     #set as global so that this global variable can be changed
     global global_numNodes
     global global_max_q_len
-#    global_numNodes = 0
-#    global_max_q_len = 0
-#    mtx_node = puzl_node(center, 0, calc_h_manhattan_dist(center))
-#    all_moves, total_nodes = a_star(mtx_node)
-#    print("moves: {}\n total # of expanded nodes: {}".format(all_moves,total_nodes))
-#    print("max num nodes in heap: ", global_max_q_len)
-    
-    #resets numNodes count in prep for next puzzle
-    #global global_numNodes
-#    global_numNodes = 0
-#    global_max_q_len = 0
-#    mtx_node = puzl_node(one_away, 0, calc_h_manhattan_dist(one_away))
-#    all_moves, total_nodes = a_star(mtx_node)
-#    print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
-#    print("max num nodes in heap: ", global_max_q_len)
-#    print("             <<<<<<<<<<<<<    end")
+    global global_heuristic
 
-#    global_numNodes = 0
-#    global_max_q_len = 0
-#    mtx_node = puzl_node(sample_sol, 0, calc_h_manhattan_dist(sample_sol))
-#    all_moves, total_nodes = a_star(mtx_node)
-#    print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
-#    print("max num nodes in heap: ", global_max_q_len)
-#    print("             <<<<<<<<<<<<<    end")
+#    print("Enter a 3x3 puzzle. Use a 0 to represent the blank. 
+#           After each number, enter a space.")
+#    row1 = input("Enter the first row: ")
+#    row2 = input("Enter the second row: ")
+#    row3 = input("Enter the third row: ")
 
+#    mtx_row1 = row1.split()
+#    mtx_row2 = row2.split()
+#    mtx_row3 = row3.split()
+
+#    for i in range(0,3):
+#        mtx_row1[i] = int(mtx_row1[i])
+#        mtx_row2[i] = int(mtx_row2[i])
+#        mtx_row3[i] = int(mtx_row3[i])
+
+#    user_mtx = [mtx_row1, mtx_row2, mtx_row3] 
+# 
+#    set_heuristic = input("Type 'manhattan' for Manhattan Distance Heuristic.\n
+#                           Type 'hamming' for Hamming Distance Heuristic.\n
+#                           Type 'uniform cost' for Uniform Cost Search") 
+
+    #resets numNodes and max_q_len count in prep for next puzzle
     global_numNodes = 0
-    global_max_q_len = 0
-    mtx_node = puzl_node(sample_sol, 0, calc_h_manhattan_dist(sample_sol))
+    global_max_q_len = 1 #to account for root node
+    #            >fixme: 1st change<<<
+    global_heuristic = "uniform cost" #notuser
+    #fixme1
+    #global_heuristic = set_heuristic
+    #                  >>2nd          >>3rd                >>4th
+    mtx_node = puzl_node(puzzle_4, 0, 0) #notuser
+    #fixme2: for choosing mtx:
+    #if global_heuristic == "manhattan":
+    #   mtx_node = puzl_node(user_mtx, 0, calc_h_manhattan_dist(user_mtx))
+    #elif global_heuristic == "hamming":
+    #   mtx_node = puzl_node(user_mtx, 0, calc_hamming_dist(user_mtx))
+    #elif global_heuristic == "uniform cost":
+    #   mtx_node = puzl_node(user_mtx, 0, 0) #hardcoded h(n) = 0
     all_moves, total_nodes = a_star(mtx_node)
     print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
-    print("max num nodes in heap: ", global_max_q_len)
+    print("max # of nodes in heap: ", global_max_q_len)
     print("             <<<<<<<<<<<<<    end")
-    
-
 
     return
 
+impossible_mtx = [[1, 2, 3], [4, 5, 6], [8, 7, 0]]
+puzzle_3 = [[3,5,8], [4,2,6], [0,1,7]]
+puzzle_1 = [[5,1,3],[8,6,0],[2,7,4]]
+puzzle_4 = [[5, 1, 8],[2, 4, 6],[7, 3, 0]]
+puzzle_2 = [[4, 8, 0],[6, 5, 7],[3, 2, 1]]
 #          00  01  02
 #          10  11  12
 #3 moves:RDR
