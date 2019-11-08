@@ -268,8 +268,6 @@ def equal_trivial(mtx):
                 return False
     return True
 
-
-#TODO: set global_heuristic = "manhattan" or whatever user wants
 def main():
 #tests:
     #1st arg: mtx, 2nd arg: g, 3rd arg: h, 4th:zero_pos
@@ -280,43 +278,43 @@ def main():
     global global_max_q_len
     global global_heuristic
 
-#    print("Enter a 3x3 puzzle. Use a 0 to represent the blank. 
-#           After each number, enter a space.")
-#    row1 = input("Enter the first row: ")
-#    row2 = input("Enter the second row: ")
-#    row3 = input("Enter the third row: ")
+    print("Enter a 3x3 puzzle. Use a 0 to represent the blank. 
+           After each number, enter a space.")
+    row1 = input("Enter the first row: ")
+    row2 = input("Enter the second row: ")
+    row3 = input("Enter the third row: ")
 
-#    mtx_row1 = row1.split()
-#    mtx_row2 = row2.split()
-#    mtx_row3 = row3.split()
+    mtx_row1 = row1.split()
+    mtx_row2 = row2.split()
+    mtx_row3 = row3.split()
 
-#    for i in range(0,3):
-#        mtx_row1[i] = int(mtx_row1[i])
-#        mtx_row2[i] = int(mtx_row2[i])
-#        mtx_row3[i] = int(mtx_row3[i])
+    for i in range(0,3):
+        mtx_row1[i] = int(mtx_row1[i])
+        mtx_row2[i] = int(mtx_row2[i])
+        mtx_row3[i] = int(mtx_row3[i])
 
-#    user_mtx = [mtx_row1, mtx_row2, mtx_row3] 
-# 
-#    set_heuristic = input("Type 'manhattan' for Manhattan Distance Heuristic.\n
-#                           Type 'hamming' for Hamming Distance Heuristic.\n
-#                           Type 'uniform cost' for Uniform Cost Search") 
+    user_mtx = [mtx_row1, mtx_row2, mtx_row3] 
+ 
+    set_heuristic = input("Type 'manhattan' for Manhattan Distance Heuristic.\n
+                           Type 'hamming' for Hamming Distance Heuristic.\n
+                           Type 'uniform cost' for Uniform Cost Search. ") 
 
     #resets numNodes and max_q_len count in prep for next puzzle
     global_numNodes = 0
     global_max_q_len = 1 #to account for root node
     #            >fixme: 1st change<<<
-    global_heuristic = "uniform cost" #notuser
-    #fixme1
-    #global_heuristic = set_heuristic
+###    global_heuristic = "manhattan" ###uncomment for notuser
+    global_heuristic = set_heuristic
     #                  >>2nd          >>3rd                >>4th
-    mtx_node = puzl_node(puzzle_4, 0, 0) #notuser
+###    mtx_node = puzl_node(impossible_mtx, 0, calc_h_manhattan_dist(impossible_mtx)) #notuser
     #fixme2: for choosing mtx:
-    #if global_heuristic == "manhattan":
-    #   mtx_node = puzl_node(user_mtx, 0, calc_h_manhattan_dist(user_mtx))
-    #elif global_heuristic == "hamming":
-    #   mtx_node = puzl_node(user_mtx, 0, calc_hamming_dist(user_mtx))
-    #elif global_heuristic == "uniform cost":
-    #   mtx_node = puzl_node(user_mtx, 0, 0) #hardcoded h(n) = 0
+    if global_heuristic == "manhattan":
+       mtx_node = puzl_node(user_mtx, 0, calc_h_manhattan_dist(user_mtx))
+    elif global_heuristic == "hamming":
+       mtx_node = puzl_node(user_mtx, 0, calc_hamming_dist(user_mtx))
+    elif global_heuristic == "uniform cost":
+       mtx_node = puzl_node(user_mtx, 0, 0) #hardcoded h(n) = 0
+
     all_moves, total_nodes = a_star(mtx_node)
     print("moves: {}\n total # of expanded nodes: {}".format(all_moves, total_nodes))
     print("max # of nodes in heap: ", global_max_q_len)
@@ -329,14 +327,11 @@ puzzle_3 = [[3,5,8], [4,2,6], [0,1,7]]
 puzzle_1 = [[5,1,3],[8,6,0],[2,7,4]]
 puzzle_4 = [[5, 1, 8],[2, 4, 6],[7, 3, 0]]
 puzzle_2 = [[4, 8, 0],[6, 5, 7],[3, 2, 1]]
-#          00  01  02
-#          10  11  12
+
 #3 moves:RDR
 sample_sol = [[1, 2, 3],
             [0, 4, 6],
             [7, 5, 8]]
-#          20  21  22
-
 #2 moves DR
 sample_solution = [[1, 2, 3],
                 [4, 0, 6],
