@@ -1,44 +1,24 @@
 import heapq #ref: inspired from Lorem Ipsum project sample
 import copy #ref: also inspired from sample project
 
-#general srch alg: (from project briefing)
-#arg1: problem(init state)
-#arg2: queueing-function
-#function srch_1,2or3(arg1, arg2):
-#nodes = create the node:init state
-#  then enqueue init node as root in minheap 
-#loop do
-#   if init state not valid(empty or impossible), return "failure"
-#   if state == goal, return (node?)
-
 trivial = [[1, 2, 3],
             [4, 5, 6],
             [7, 8, 0]]
 
-#          00  01  02
 one_away = [[1, 2, 3],
             [4, 5, 6],
             [7, 0, 8]]
-#          20  21  22
 
 must_trace = [[1, 2, 3],
             [4, 0, 6],
             [7, 5, 8]]
-            #sol = 2
-
-center = [[1, 2, 3],
-        [4, 0, 6],
-        [7, 5, 8]]
 
 #value: the key's index position w.r.t matrices   
 goal_dict = {1:[0,0], 2:[0,1], 3:[0,2], 4:[1,0], 5:[1,1], 6:[1,2],
             7:[2,0], 8:[2,1]}
 
 #a list of tuples of moves the 0 can do in a matrix
-add_move = [('L', (0,-1)),
-            ('R', (0, 1)),
-            ('U', (-1,0)), 
-            ('D', (1,0))]
+add_move = [('L', (0,-1)), ('R', (0, 1)), ('U', (-1,0)), ('D', (1,0))]
 
 #global variables
 global_heuristic = ""
@@ -53,7 +33,6 @@ def set_heuristic(userInput):
     global_heuristic = userInput
     return
 
-
 #ref: consulted https://www.tutorialspoint.com/python/python_nodes.htm
 #       on how to build node class
 #creating nodes class that rep puzl matrices and f_val = g + h
@@ -65,7 +44,6 @@ class puzl_node:
         self.h_val = h_val
         self.f_val = self.g_val + self.h_val
         self.zero_pos = locate_zero_pos(self.mtx)
-        
         self.storedMoves = newMoves
 
 def print_mtx(mtx):
@@ -92,10 +70,7 @@ def locate_zero_pos(mtx):
 
 #to call this, 1st arg: node
 #2nd arg: minheap
-#TODO: make it so that I can add each new node made in the for loop to the minheap
 def add_poss_mtx_nodes(minheap, node):
-    #fixme: change if to for
-    
     #print("within poss_mtx_node; printing orig mtx:")
     print("Expanding this state:")
     #uncomment below to show trace of solution
@@ -119,17 +94,15 @@ def add_poss_mtx_nodes(minheap, node):
         #moving tmp_val to old zero pos
         new_mtx[(node.zero_pos)[0]][(node.zero_pos)[1]] = tmp_val
 
-#todo: set the nodes for the other two
-#the only thing that would change would be the if() and the calc_
         global global_numNodes
         global global_max_q_len
+
         if (global_heuristic == "manhattan"):
             new_mtx_node = puzl_node(new_mtx, 
                                         (node.g_val)+1,
                                         calc_h_manhattan_dist(new_mtx),
                                         (node.storedMoves + move))
             #only set global when requires change (i.e increment)
-            ###global global_numNodes
             global_numNodes += 1
             
             #add to minheap by priority(f-val)
@@ -137,8 +110,8 @@ def add_poss_mtx_nodes(minheap, node):
             #heapq will compare the first el of the tuple: f
             #if f are same, will compare numNodes next(the order they are created)
             heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
+            
             #counter for max # nodes in queue at a time
-            ###global global_max_q_len
             if global_max_q_len < len(minheap):
                 global_max_q_len = len(minheap)
 
@@ -148,7 +121,7 @@ def add_poss_mtx_nodes(minheap, node):
                                         calc_hamming_dist(new_mtx),
                                         (node.storedMoves + move))
             #only set global when requires change (i.e increment)
-            ###global global_numNodes
+
             global_numNodes += 1
             
             #add to minheap by priority(f-val)
@@ -156,8 +129,8 @@ def add_poss_mtx_nodes(minheap, node):
             #heapq will compare the first el of the tuple: f
             #if f are same, will compare numNodes next(the order they are created)
             heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
+            
             #counter for max # nodes in queue at a time
-            ###global global_max_q_len
             if global_max_q_len < len(minheap):
                 global_max_q_len = len(minheap)
 
@@ -168,7 +141,7 @@ def add_poss_mtx_nodes(minheap, node):
                                         0,
                                         (node.storedMoves + move))
             #only set global when requires change (i.e increment)
-            ###global global_numNodes
+
             global_numNodes += 1
             
             #add to minheap by priority(f-val)
@@ -176,18 +149,15 @@ def add_poss_mtx_nodes(minheap, node):
             #heapq will compare the first el of the tuple: f
             #if f are same, will compare numNodes next(the order they are created)
             heapq.heappush(minheap, (f, global_numNodes, new_mtx_node))
-            #counter for max # nodes in queue at a time
-            ###global global_max_q_len
-            if global_max_q_len < len(minheap):
-                global_max_q_len = len(minheap)
             
+            #counter for max # nodes in queue at a time
+            if global_max_q_len < len(minheap):
+                global_max_q_len = len(minheap)    
     return
 
 #checks if minheap is empty
 def heap_is_empty(minheap):
     return len(minheap) == 0
-
-
 
 #arg: init_node = a node from main()
 def a_star(init_node):
@@ -215,11 +185,7 @@ def a_star(init_node):
         #insert new nodes extended from popped
         add_poss_mtx_nodes(minheap, popped_node)
         #all poss new nodes in minheap as of now
-
-            #todo: then start a minheap with newly taken out node?
     return
-
-#TODO: impl. print path from goal state back up to root using parent var
 
 #h(n) = heuristic that /underestimates/
 #   the sum of /each/ tile's_distance_to_desired_pos
