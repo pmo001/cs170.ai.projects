@@ -1,7 +1,8 @@
 Project 1					CS 170. Introduction to Artificial Intelligence
 
-Paul Mo						Instructor: Dr. Eamonn Keogh
+Paul Mo	
 pmo001@ucr.edu
+Instructor: Dr. Eamonn Keogh
 8-November-2019
 
 In completing this homework, I consulted…
