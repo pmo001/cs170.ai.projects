@@ -21,7 +21,7 @@ The ability to deepcopy from “copy”.
 numpy for the bar graph representation
 matplotlib.plyplot for the bar graph representation
 
-=====================================================================================================================================================================
+==============================================================================================
 
 The following is a trace of the Manhattan distance A* on the following problem:
 
@@ -52,7 +52,7 @@ max # of nodes in heap:  6
 My summary
 To solve this problem with A* with the Manhattan Distance heuristic, it required two moves (Down, Right) in order to get to the goal node. In doing so, a total of 7 nodes were expanded. The maximum number of nodes in the queue at any one time was 6.
 
-=====================================================================================================================================================================
+===================================================================================
 
 CS170: Project 1 Report
 Introduction
